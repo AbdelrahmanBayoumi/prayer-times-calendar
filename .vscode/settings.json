@@ -1,5 +1,5 @@
 {
-  "cSpell.words": ["fajr", "dhuhr", "asr", "maghrib", "isha"],
+  "cSpell.words": ["adhan", "asr", "dhuhr", "fajr", "isha", "maghrib"],
   "editor.formatOnSave": true,
   "editor.tabSize": 4,
   "editor.defaultFormatter": "esbenp.prettier-vscode",

@@ -1,61 +1,19 @@
-import { CalculationMethod, Coordinates, PrayerTimes } from 'adhan';
-import fs from 'fs';
-import ICAL from 'ical.js';
-import { DateTime } from 'luxon';
-import moment from 'moment-timezone';
-import path from 'path';
-import { PRAYER_DETAILS, PRAYER_DURATIONS } from './constants/prayer-details';
-import { createCalendarEvent } from './utils/calendar-utils';
+import { CalculationMethod, Coordinates } from 'adhan';
+import { generatePrayerCalendar } from './utils/calendar-utils';
 
-// Set the coordinates and calculation method
-const coordinates = new Coordinates(31.1981, 29.9192);
-const params = CalculationMethod.Egyptian();
+// Example dynamic inputs (these can be taken from user input or environment variables)
+const coordinates = new Coordinates(31.1981, 29.9192); // Alexandria, Egypt
+const calculationMethod = CalculationMethod.Egyptian();
+const startDate = process.env.START_DATE || '2024-11-14';
+const endDate = process.env.END_DATE || '2024-12-14';
+const outputPath =
+  process.env.OUTPUT_PATH || 'output/generated_prayer_times.ics';
 
-// Define the date range
-const startDate = DateTime.fromISO('2024-11-14');
-const endDate = DateTime.fromISO('2024-12-14');
-
-// Create a new calendar component
-const calendar = new ICAL.Component(['vcalendar', [], []]);
-calendar.updatePropertyWithValue('VERSION', '2.0');
-calendar.updatePropertyWithValue('CALSCALE', 'GREGORIAN');
-calendar.updatePropertyWithValue('PRODID', 'adhan-prayer-calendar');
-calendar.updatePropertyWithValue('X-WR-CALNAME', 'Prayer Times');
-
-// Loop through each day in the date range
-for (let date = startDate; date <= endDate; date = date.plus({ days: 1 })) {
-  const jsDate = date.toJSDate();
-  const prayerTimes = new PrayerTimes(coordinates, jsDate, params);
-
-  console.log(`Prayer times for ${moment(jsDate).format('MMMM DD, YYYY')}`);
-
-  Object.entries(prayerTimes).forEach(([prayer, time]) => {
-    if (PRAYER_DURATIONS[prayer] != null && PRAYER_DETAILS[prayer]) {
-      const startTime = DateTime.fromJSDate(time);
-      const event = createCalendarEvent(
-        prayer,
-        startTime,
-        PRAYER_DURATIONS[prayer],
-        PRAYER_DETAILS[prayer],
-      );
-
-      calendar.addSubcomponent(event);
-    }
-  });
-}
-
-// Define output path
-const outputPath = path.join('output', 'generated_prayer_times.ics');
-
-// Ensure the output directory exists
-fs.mkdir(path.dirname(outputPath), { recursive: true }, (err) => {
-  if (err) throw err;
-
-  // Write the generated calendar to the .ics file in the output directory
-  fs.writeFile(outputPath, calendar.toString(), (writeErr) => {
-    if (writeErr) throw writeErr;
-    console.log(
-      'Prayer times calendar generated successfully in the output folder for the specified date range!',
-    );
-  });
+// Generate the prayer calendar with the specified options
+generatePrayerCalendar({
+  coordinates,
+  calculationMethod,
+  startDate,
+  endDate,
+  outputPath,
 });
