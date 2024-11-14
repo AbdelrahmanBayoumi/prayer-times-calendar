@@ -1,50 +1,117 @@
-# Prayer Times Calendar
+# Prayer Times Calendar Generator
 
-A TypeScript-based tool to generate Islamic prayer times as an `.ics` calendar file. This tool uses the Adhan library to calculate prayer times based on location and generates events in `.ics` format that can be imported into popular calendar applications.
+A Node.js and TypeScript-based tool that dynamically generates prayer times in the `.ics` calendar format for a specified date range, location, and calculation method. This can be used to import prayer times into various calendar applications.
 
 ## Features
 
-- Calculates prayer times based on location coordinates.
-- Generates an `.ics` file with events for Fajr, Dhuhr, Asr, Maghrib, Isha, and sunrise.
-- Adds custom reminders and hadiths to each prayer event.
+- **Dynamic Date Range**: Configure the start and end dates for the calendar generation.
+- **Location-Based Calculation**: Input coordinates to get accurate prayer times for specific locations.
+- **Custom Calculation Method**: Choose between different Islamic calculation methods for prayer times.
+- **ICS File Output**: Generates a `.ics` file that can be imported into calendar applications.
+- **Customizable Output Directory**: Specify the file path for the generated calendar file.
 
-## Installation
+## Getting Started
 
-Clone the repository and install the dependencies:
+### Prerequisites
 
-```bash
-git clone https://github.com/your-username/prayer-times-calendar.git
-cd prayer-times-calendar
-npm install
+- Node.js (v20 or above recommended)
+- NPM
+
+### Installation
+
+1. Clone the repository:
+
+   ```bash
+   git clone https://github.com/AbdelrahmanBayoumi/prayer-times-calendar.git
+   cd prayer-times-calendar
+   ```
+
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+
+### Build and Run
+
+1. Compile the TypeScript code:
+
+   ```bash
+   npm run build
+   ```
+
+2. Run the program:
+   ```bash
+   npm run start
+   ```
+
+### Environment Configuration
+
+The project allows configuration through environment variables. You can set these variables in a `.env` file or directly in the terminal.
+
+- **START_DATE**: Start date for the calendar generation (e.g., `2024-11-14`).
+- **END_DATE**: End date for the calendar generation (e.g., `2024-12-14`).
+- **OUTPUT_PATH**: Output path for the generated `.ics` file (default: `output/generated_prayer_times.ics`).
+
+#### Example `.env` file
+
+```plaintext
+START_DATE=2024-11-14
+END_DATE=2024-12-14
+OUTPUT_PATH=output/generated_prayer_times.ics
 ```
 
-## Usage
+### Usage
 
-To generate the `.ics` file, build the TypeScript project and run the main script:
+This tool will generate a prayer times calendar `.ics` file for the specified date range and location.
 
-```bash
-npm run build
-npm start
+## Usage Example
+
+If you'd like to customize the parameters, you can specify them through the environment or directly within the code.
+
+```typescript
+import { CalculationMethod, Coordinates } from 'adhan';
+import { generatePrayerCalendar } from './utils/calendar-utils';
+
+const coordinates = new Coordinates(31.1981, 29.9192); // Alexandria, Egypt
+const calculationMethod = CalculationMethod.Egyptian();
+const startDate = '2024-11-14';
+const endDate = '2024-12-14';
+const outputPath = 'output/generated_prayer_times.ics';
+
+generatePrayerCalendar({
+  coordinates,
+  calculationMethod,
+  startDate,
+  endDate,
+  outputPath,
+});
 ```
 
-## Development
+## Tests
 
-For development, you can use:
+Run tests with:
 
-- **`npm run dev`**: Start the project with live reload using `ts-node-dev`.
-- **`npm run lint`**: Lint the code using ESLint.
-- **`npm run format`**: Format the code using Prettier.
-- **`npm test`**: Run tests using Jest.
+```bash
+npm test
+```
 
 ## Contributing
 
-Contributions are welcome! Please check out the [issues](https://github.com/your-username/prayer-times-calendar/issues) for things to work on.
+Contributions are welcome! Please fork the repository, make your changes, and submit a pull request.
 
-1. Fork the repository.
-2. Create a new branch.
-3. Make your changes.
-4. Submit a pull request.
+### Commit Message Guidelines
+
+- Use `feat:` for new features.
+- Use `fix:` for bug fixes.
+- Use `docs:` for documentation updates.
 
 ## License
 
-This project is licensed under the MIT License. See [LICENSE](LICENSE) for more details.
+This project is licensed under the MIT License.
+
+---
+
+## Acknowledgements
+
+- [adhan.js](https://github.com/batoulapps/adhan-js) for the prayer time calculation library.
+- [ical.js](https://github.com/mozilla-comm/ical.js) for the iCalendar generation library.
