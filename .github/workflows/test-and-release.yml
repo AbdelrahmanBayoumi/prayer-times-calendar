@@ -21,7 +21,7 @@ jobs:
         run: npm install
 
       - name: Build .ics file
-        run: npm run build && npm run start
+        run: npx husky install && npm run build && npm run start
         env:
           NODE_ENV: production
 
