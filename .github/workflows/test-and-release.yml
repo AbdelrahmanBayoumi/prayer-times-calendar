@@ -46,6 +46,9 @@ jobs:
         env:
           NODE_ENV: production
 
+      - name: List output directory contents
+        run: ls -R output || echo "Output directory does not exist or is empty"
+
       - name: Check if generated file exists
         id: check_file
         run: |
