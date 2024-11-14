@@ -40,18 +40,31 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Build .ics file
-        run: npm run build
-        env:
-          NODE_ENV: production
-
       - name: Get version from package.json
         id: get_version
         run: |
           version=$(jq -r '.version' package.json)
           echo "PACKAGE_VERSION=$version" >> $GITHUB_ENV
 
+      - name: Check if tag exists
+        id: check_tag
+        run: |
+          if git rev-parse "v${{ env.PACKAGE_VERSION }}" >/dev/null 2>&1; then
+            echo "Tag v${{ env.PACKAGE_VERSION }} already exists."
+            echo "tag_exists=true" >> $GITHUB_ENV
+          else
+            echo "tag_exists=false" >> $GITHUB_ENV
+        env:
+          PACKAGE_VERSION: ${{ env.PACKAGE_VERSION }}
+
+      - name: Build .ics file
+        if: env.tag_exists == 'false' # Only run if the tag doesn't exist
+        run: npm run build
+        env:
+          NODE_ENV: production
+
       - name: Create or update GitHub release
+        if: env.tag_exists == 'false' # Only create a release if the tag doesn't exist
         id: release
         uses: actions/create-release@v1
         env:
@@ -65,9 +78,9 @@ jobs:
             This release was automatically created by a GitHub Action.
             - Version: ${{ env.PACKAGE_VERSION }}
             - Commit: ${{ github.sha }}
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
 
       - name: Upload release assets
+        if: env.tag_exists == 'false' # Only upload assets if the release was created
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
