@@ -1,0 +1,68 @@
+name: Test and Release
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run tests
+        run: npm test
+
+  release:
+    runs-on: ubuntu-latest
+    needs: test # This job will only run if the tests pass
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+
+      - name: Get version from package.json
+        id: get_version
+        run: |
+          version=$(jq -r '.version' package.json)
+          echo "PACKAGE_VERSION=$version" >> $GITHUB_ENV
+        env:
+          PACKAGE_VERSION: ${{ steps.get_version.outputs.version }}
+
+      - name: Create or update GitHub release
+        id: release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: 'v${{ env.PACKAGE_VERSION }}'
+          release_name: 'Version ${{ env.PACKAGE_VERSION }}'
+          draft: false
+          prerelease: false
+          body: |
+            This release was automatically created by a GitHub Action.
+            - Version: ${{ env.PACKAGE_VERSION }}
+            - Commit: ${{ github.sha }}
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+
+      - name: Upload release assets (if needed)
+        if: steps.release.outputs.upload_url != ''
+        run: |
+          # Optional: Add any assets to upload, e.g., build output files
+          echo "No additional assets to upload at this time."

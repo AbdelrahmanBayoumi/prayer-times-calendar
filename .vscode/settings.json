@@ -1,0 +1,9 @@
+{
+  "cSpell.words": ["fajr", "dhuhr", "asr", "maghrib", "isha"],
+  "editor.formatOnSave": true,
+  "editor.tabSize": 4,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.codeActionsOnSave": {
+    "source.organizeImports": "explicit"
+  }
+}

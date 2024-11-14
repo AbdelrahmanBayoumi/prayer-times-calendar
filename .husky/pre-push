@@ -1,0 +1,6 @@
+
+# Your script to run before commiting
+echo "Pre-Push hook triggered: Running Tests"
+
+# Run tests
+npm run test

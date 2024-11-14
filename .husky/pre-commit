@@ -1,0 +1,5 @@
+
+# Your script to run before commiting
+echo "Pre-Commit hook triggered: Running lint-staged"
+
+npx lint-staged --allow-empty
