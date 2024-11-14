@@ -4,6 +4,23 @@
   "description": "A TypeScript-based tool to generate prayer times calendar in .ics format for a specified date range.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AbdelrahmanBayoumi/prayer-times-calendar.git"
+  },
+  "homepage": "https://github.com/AbdelrahmanBayoumi/prayer-times-calendar#readme",
+  "bugs": {
+    "url": "https://github.com/AbdelrahmanBayoumi/prayer-times-calendar/issues"
+  },
+  "keywords": [
+    "prayer times",
+    "ics",
+    "calendar",
+    "adhan",
+    "islamic"
+  ],
+  "author": "Abdelrahman Bayoumi <abdelrahmanbayoumi1@gmail.com>",
+  "license": "MIT",
   "scripts": {
     "prepare": "husky",
     "build": "tsc",
@@ -22,15 +39,6 @@
       "prettier --write"
     ]
   },
-  "keywords": [
-    "prayer times",
-    "ics",
-    "calendar",
-    "adhan",
-    "islamic"
-  ],
-  "author": "Abdelrahman Bayoumi <abdelrahmanbayoumi1@gmail.com>",
-  "license": "MIT",
   "dependencies": {
     "adhan": "^4.4.3",
     "ical.js": "^2.1.0",
