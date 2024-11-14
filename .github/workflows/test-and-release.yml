@@ -45,11 +45,6 @@ jobs:
         env:
           NODE_ENV: production
 
-      - name: Move .ics file to output folder
-        run: |
-          mkdir -p output
-          mv generated_prayer_times.ics output/generated_prayer_times.ics
-
       - name: Get version from package.json
         id: get_version
         run: |
