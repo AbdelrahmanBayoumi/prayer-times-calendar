@@ -46,6 +46,14 @@ jobs:
         env:
           NODE_ENV: production
 
+      - name: Check if generated file exists
+        id: check_file
+        run: |
+          if [ ! -f output/generated_prayer_times.ics ]; then
+            echo "Error: output/generated_prayer_times.ics not found."
+            exit 1
+          fi
+
       - name: Get version from package.json
         id: get_version
         run: |
@@ -78,7 +86,7 @@ jobs:
             - Commit: ${{ github.sha }}
 
       - name: Upload release assets
-        if: steps.release.outcome == 'success' && env.tag_exists == 'false'
+        if: steps.release.outcome == 'success' && env.tag_exists == 'false' && steps.check_file.outcome == 'success'
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
