@@ -69,7 +69,15 @@ jobs:
             echo "tag_exists=false" >> $GITHUB_ENV
           fi
 
-      - name: Create or update GitHub release
+      - name: Get commit messages
+        id: get_commits
+        if: env.tag_exists == 'false'
+        run: |
+          # Fetch commit messages since the last tag
+          messages=$(git log $(git describe --tags --abbrev=0 @^)..@ --pretty=format:"* %s")
+          echo "RELEASE_NOTES=$messages" >> $GITHUB_ENV
+
+      - name: Create GitHub release
         id: release
         if: env.tag_exists == 'false'
         uses: actions/create-release@v1
@@ -84,6 +92,9 @@ jobs:
             This release was automatically created by a GitHub Action.
             - Version: ${{ env.PACKAGE_VERSION }}
             - Commit: ${{ github.sha }}
+
+            ## Changes
+            ${{ env.RELEASE_NOTES }}
 
       - name: Upload release assets
         if: steps.release.outcome == 'success' && env.tag_exists == 'false' && steps.check_file.outcome == 'success'
