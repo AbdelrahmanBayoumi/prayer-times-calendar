@@ -3,6 +3,7 @@ import fs from 'fs';
 import ICAL from 'ical.js';
 import { DateTime } from 'luxon';
 import moment from 'moment-timezone';
+import path from 'path';
 import { PRAYER_DETAILS, PRAYER_DURATIONS } from './constants/prayer-details';
 import { createCalendarEvent } from './utils/calendar-utils';
 
@@ -43,10 +44,18 @@ for (let date = startDate; date <= endDate; date = date.plus({ days: 1 })) {
   });
 }
 
-// Write the generated calendar to an .ics file
-fs.writeFile('generated_prayer_times.ics', calendar.toString(), (err) => {
+// Define output path
+const outputPath = path.join('output', 'generated_prayer_times.ics');
+
+// Ensure the output directory exists
+fs.mkdir(path.dirname(outputPath), { recursive: true }, (err) => {
   if (err) throw err;
-  console.log(
-    'Prayer times calendar generated successfully for the specified date range!',
-  );
+
+  // Write the generated calendar to the .ics file in the output directory
+  fs.writeFile(outputPath, calendar.toString(), (writeErr) => {
+    if (writeErr) throw writeErr;
+    console.log(
+      'Prayer times calendar generated successfully in the output folder for the specified date range!',
+    );
+  });
 });

@@ -37,13 +37,24 @@ jobs:
         with:
           node-version: '20'
 
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build .ics file
+        run: npm run build
+        env:
+          NODE_ENV: production
+
+      - name: Move .ics file to output folder
+        run: |
+          mkdir -p output
+          mv generated_prayer_times.ics output/generated_prayer_times.ics
+
       - name: Get version from package.json
         id: get_version
         run: |
           version=$(jq -r '.version' package.json)
           echo "PACKAGE_VERSION=$version" >> $GITHUB_ENV
-        env:
-          PACKAGE_VERSION: ${{ steps.get_version.outputs.version }}
 
       - name: Create or update GitHub release
         id: release
@@ -61,8 +72,12 @@ jobs:
             - Commit: ${{ github.sha }}
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
 
-      - name: Upload release assets (if needed)
-        if: steps.release.outputs.upload_url != ''
-        run: |
-          # Optional: Add any assets to upload, e.g., build output files
-          echo "No additional assets to upload at this time."
+      - name: Upload release assets
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.release.outputs.upload_url }}
+          asset_path: output/generated_prayer_times.ics
+          asset_name: generated_prayer_times.ics
+          asset_content_type: text/calendar
