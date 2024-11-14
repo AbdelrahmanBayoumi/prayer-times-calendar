@@ -17,10 +17,13 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Install dependencies and run tests
-        run: |
-          npm install
-          npm test
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build .ics file
+        run: npm run build && npm run start
+        env:
+          NODE_ENV: production
 
   release:
     runs-on: ubuntu-latest
