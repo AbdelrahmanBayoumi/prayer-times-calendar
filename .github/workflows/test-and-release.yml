@@ -42,7 +42,7 @@ jobs:
         run: npm install
 
       - name: Build .ics file
-        run: npm run build
+        run: npm run build && npm run start
         env:
           NODE_ENV: production
 
