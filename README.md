@@ -14,7 +14,7 @@ A Node.js and TypeScript-based tool that dynamically generates prayer times in t
 
 ### Prerequisites
 
-- Node.js (v20 or above recommended)
+- Node.js
 - NPM
 
 ### Installation
