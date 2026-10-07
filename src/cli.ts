@@ -10,7 +10,7 @@ async function main(): Promise<void> {
     process.env.OUTPUT_PATH || 'output/generated_prayer_times.ics';
   const alarmOffsetMinutes = process.env.ALARM_OFFSET_MINUTES
     ? parseInt(process.env.ALARM_OFFSET_MINUTES, 10)
-    : 15;
+    : 10;
 
   try {
     await generatePrayerCalendar({
