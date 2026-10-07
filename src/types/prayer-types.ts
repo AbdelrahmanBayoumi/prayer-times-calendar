@@ -23,4 +23,5 @@ export interface PrayerCalendarOptions {
   startDate: string;
   endDate: string;
   outputPath: string;
+  alarmOffsetMinutes?: number | null;
 }

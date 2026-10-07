@@ -63,6 +63,53 @@ describe('createCalendarEvent', () => {
       );
     });
   });
+
+  it('should attach a VALARM when alarmOffsetMinutes is provided', () => {
+    const startTime = DateTime.fromISO('2024-11-14T05:00:00Z');
+    const duration = PRAYER_DURATIONS['fajr'];
+    const details = PRAYER_DETAILS['fajr'];
+
+    const event = createCalendarEvent('fajr', startTime, duration, details, 15);
+    const alarm = event.getFirstSubcomponent('valarm');
+
+    expect(alarm).not.toBeNull();
+    expect(alarm?.getFirstPropertyValue('ACTION')).toBe('DISPLAY');
+    expect(alarm?.getFirstPropertyValue('TRIGGER')).toBe('-PT15M');
+  });
+
+  it('should not attach a VALARM for sunrise even if alarmOffsetMinutes is set', () => {
+    const startTime = DateTime.fromISO('2024-11-14T06:30:00Z');
+    const duration = PRAYER_DURATIONS['sunrise'];
+    const details = PRAYER_DETAILS['sunrise'];
+
+    const event = createCalendarEvent(
+      'sunrise',
+      startTime,
+      duration,
+      details,
+      15,
+    );
+    const alarm = event.getFirstSubcomponent('valarm');
+
+    expect(alarm).toBeNull();
+  });
+
+  it('should not attach a VALARM when alarmOffsetMinutes is null', () => {
+    const startTime = DateTime.fromISO('2024-11-14T05:00:00Z');
+    const duration = PRAYER_DURATIONS['fajr'];
+    const details = PRAYER_DETAILS['fajr'];
+
+    const event = createCalendarEvent(
+      'fajr',
+      startTime,
+      duration,
+      details,
+      null,
+    );
+    const alarm = event.getFirstSubcomponent('valarm');
+
+    expect(alarm).toBeNull();
+  });
 });
 
 describe('generatePrayerCalendar', () => {
@@ -102,5 +149,9 @@ describe('generatePrayerCalendar', () => {
     // 2 days * 6 prayers = 12 events
     const eventCount = (content.match(/BEGIN:VEVENT/g) || []).length;
     expect(eventCount).toBe(12);
+
+    // 2 days * 5 prayers (excluding sunrise) = 10 alarms
+    const alarmCount = (content.match(/BEGIN:VALARM/g) || []).length;
+    expect(alarmCount).toBe(10);
   });
 });

@@ -15,6 +15,7 @@ export function createCalendarEvent(
   startTime: DateTime,
   duration: number,
   prayerDetail: PrayerDetail,
+  alarmOffsetMinutes?: number | null,
 ): ICAL.Component {
   const endTime = startTime.plus({ minutes: duration });
   const event = new ICAL.Component('vevent');
@@ -42,6 +43,16 @@ export function createCalendarEvent(
   event.addPropertyWithValue('CLASS', 'PUBLIC');
   event.addPropertyWithValue('TRANSP', 'OPAQUE');
 
+  if (alarmOffsetMinutes != null && prayer !== 'sunrise') {
+    const alarm = new ICAL.Component('valarm');
+    alarm.addPropertyWithValue('ACTION', 'DISPLAY');
+    alarm.addPropertyWithValue('DESCRIPTION', prayerDetail.name);
+    const triggerValue =
+      alarmOffsetMinutes > 0 ? `-PT${alarmOffsetMinutes}M` : 'PT0S';
+    alarm.addPropertyWithValue('TRIGGER', triggerValue);
+    event.addSubcomponent(alarm);
+  }
+
   return event;
 }
 
@@ -51,6 +62,7 @@ export async function generatePrayerCalendar({
   startDate,
   endDate,
   outputPath,
+  alarmOffsetMinutes = 15,
 }: PrayerCalendarOptions): Promise<string> {
   const start = DateTime.fromISO(startDate);
   const end = DateTime.fromISO(endDate);
@@ -80,6 +92,7 @@ export async function generatePrayerCalendar({
           startTime,
           duration,
           details,
+          alarmOffsetMinutes,
         );
 
         calendar.addSubcomponent(event);
