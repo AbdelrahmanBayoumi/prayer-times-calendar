@@ -1,6 +1,6 @@
-import { PrayerDetail } from '../types/prayer-types';
+import { PrayerDetail, PrayerName } from '../types/prayer-types';
 
-export const PRAYER_DURATIONS: { [key: string]: number } = {
+export const PRAYER_DURATIONS: Record<PrayerName, number> = {
   fajr: 40,
   sunrise: 0,
   dhuhr: 25,
@@ -9,7 +9,7 @@ export const PRAYER_DURATIONS: { [key: string]: number } = {
   isha: 30,
 };
 
-export const PRAYER_DETAILS: { [key: string]: PrayerDetail } = {
+export const PRAYER_DETAILS: Record<PrayerName, PrayerDetail> = {
   fajr: {
     name: '🕋 صلاة الفجر',
     hadith: 'قال رسول الله ﷺ: من صلى الصبح فهو في ذمة الله.',

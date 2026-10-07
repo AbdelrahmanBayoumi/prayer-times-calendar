@@ -1,12 +1,20 @@
 import { CalculationParameters, Coordinates } from 'adhan';
 
+export type PrayerName =
+  | 'fajr'
+  | 'sunrise'
+  | 'dhuhr'
+  | 'asr'
+  | 'maghrib'
+  | 'isha';
+
 export interface PrayerDetail {
   name: string;
   hadith: string;
 }
 
-export type PrayerTimes = {
-  [key: string]: Date;
+export type PrayerTimes = Partial<Record<PrayerName, Date>> & {
+  [key: string]: Date | undefined;
 };
 
 export interface PrayerCalendarOptions {

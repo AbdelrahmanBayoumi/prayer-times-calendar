@@ -2,13 +2,16 @@ import { PrayerTimes } from 'adhan';
 import fs from 'fs';
 import ICAL from 'ical.js';
 import { DateTime } from 'luxon';
-import moment from 'moment-timezone';
 import path from 'path';
 import { PRAYER_DETAILS, PRAYER_DURATIONS } from '../constants/prayer-details';
-import { PrayerCalendarOptions, PrayerDetail } from '../types/prayer-types';
+import {
+  PrayerCalendarOptions,
+  PrayerDetail,
+  PrayerName,
+} from '../types/prayer-types';
 
 export function createCalendarEvent(
-  prayer: string,
+  prayer: PrayerName | string,
   startTime: DateTime,
   duration: number,
   prayerDetail: PrayerDetail,
@@ -42,13 +45,13 @@ export function createCalendarEvent(
   return event;
 }
 
-export function generatePrayerCalendar({
+export async function generatePrayerCalendar({
   coordinates,
   calculationMethod,
   startDate,
   endDate,
   outputPath,
-}: PrayerCalendarOptions): void {
+}: PrayerCalendarOptions): Promise<string> {
   const start = DateTime.fromISO(startDate);
   const end = DateTime.fromISO(endDate);
 
@@ -63,16 +66,20 @@ export function generatePrayerCalendar({
     const jsDate = date.toJSDate();
     const prayerTimes = new PrayerTimes(coordinates, jsDate, calculationMethod);
 
-    console.log(`Prayer times for ${moment(jsDate).format('MMMM DD, YYYY')}`);
+    console.log(`Prayer times for ${date.toFormat('MMMM dd, yyyy')}`);
 
     Object.entries(prayerTimes).forEach(([prayer, time]) => {
-      if (PRAYER_DURATIONS[prayer] != null && PRAYER_DETAILS[prayer]) {
+      const prayerName = prayer as PrayerName;
+      const duration = PRAYER_DURATIONS[prayerName];
+      const details = PRAYER_DETAILS[prayerName];
+
+      if (duration != null && details && time instanceof Date) {
         const startTime = DateTime.fromJSDate(time);
         const event = createCalendarEvent(
-          prayer,
+          prayerName,
           startTime,
-          PRAYER_DURATIONS[prayer],
-          PRAYER_DETAILS[prayer],
+          duration,
+          details,
         );
 
         calendar.addSubcomponent(event);
@@ -80,16 +87,10 @@ export function generatePrayerCalendar({
     });
   }
 
-  // Ensure the output directory exists
-  fs.mkdir(path.dirname(outputPath), { recursive: true }, (err) => {
-    if (err) throw err;
+  // Ensure the output directory exists and write calendar
+  await fs.promises.mkdir(path.dirname(outputPath), { recursive: true });
+  await fs.promises.writeFile(outputPath, calendar.toString(), 'utf-8');
+  console.log(`Prayer times calendar generated successfully in ${outputPath}`);
 
-    // Write the generated calendar to the .ics file in the output directory
-    fs.writeFile(outputPath, calendar.toString(), (writeErr) => {
-      if (writeErr) throw writeErr;
-      console.log(
-        `Prayer times calendar generated successfully in ${outputPath}`,
-      );
-    });
-  });
+  return outputPath;
 }
